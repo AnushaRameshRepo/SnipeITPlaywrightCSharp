@@ -5,6 +5,7 @@ using SnipeIt.Pages;
 using Pages.CreateAssetsPage;
 using Pages.AssetDetailsPage;
 using NUnit.Framework.Interfaces;
+using Microsoft.Playwright;
 
 namespace SnipeIt.Test;
 
@@ -26,6 +27,14 @@ public class BaseTest : PageTest
         assetDetailsPage = new AssetDetailsPage(Page);
 
         await loginPage.login();
+    }
+
+    protected async Task VerifyAsync(params(ILocator,string Text)[] checks)
+    {
+        foreach(var (locator, text)in checks)
+        {
+            await Expect(locator).ToContainTextAsync(text);
+        }
     }
 
      [TearDown]

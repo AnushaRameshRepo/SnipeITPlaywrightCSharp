@@ -25,14 +25,12 @@ public class CreateAssetTest:BaseTest
         await Expect(assetsPage.tabelAssetTagLocator.First).ToContainTextAsync(createdAsset.assetTag);
         await assetsPage.tabelAssetTagLocator.First.ClickAsync();
         await assetDetailsPage.assignedUserLocator.WaitForAsync();
-        await Expect(assetDetailsPage.statusLocator).ToContainTextAsync("Ready to Deploy");
-        await Expect(assetDetailsPage.assignedUserLocator).ToContainTextAsync(createdAsset.assignedUser);
-        await Expect(assetDetailsPage.assetCreatedByLocator).ToContainTextAsync(await panelPage.userInfoLocator.TextContentAsync());
-        await Expect(assetDetailsPage.assetModelLocator).ToContainTextAsync("Macbook Pro 13");
-        await Expect(assetDetailsPage.assetModelNoLocator).ToContainTextAsync(createdAsset.model);
-
-
-       
+        await VerifyAsync(
+            (assetDetailsPage.statusLocator,"Ready to Deploy"),
+            (assetDetailsPage.assignedUserLocator,createdAsset.assignedUser),
+            (assetDetailsPage.assetCreatedByLocator, await panelPage.userInfoLocator.TextContentAsync()),
+            (assetDetailsPage.assetModelLocator, "Macbook Pro 13"),
+            (assetDetailsPage.assetModelNoLocator, createdAsset.model));
 
     }
 }
