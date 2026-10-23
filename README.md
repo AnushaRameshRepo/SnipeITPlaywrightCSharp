@@ -80,6 +80,6 @@ SnipeIt/
 └── appsettings.local.json      # Your credentials (NOT committed)
 
 
-##Test artifact
+## Test artifact
 
 Screenshot is setup for only failed test cases. 
