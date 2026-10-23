@@ -1,0 +1,18 @@
+
+# SnipeIt
+# .NET build output
+bin/
+obj/
+
+# IDE / OS
+.vs/
+.DS_Store
+
+# Test artifacts
+screenshots/
+videos/
+traces/
+TestResults/
+
+# Secrets (never commit)
+appsettings.local.json
