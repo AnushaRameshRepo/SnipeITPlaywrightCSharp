@@ -1,0 +1,55 @@
+name: SnipeIt Tests
+ 
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:   # lets you run it manually from the Actions tab
+ 
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+ 
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+ 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x   # match TargetFramework in SnipeIt.csproj
+ 
+      - name: Restore packages
+        run: dotnet restore
+ 
+      - name: Build
+        run: dotnet build --no-restore
+ 
+      - name: Install Playwright browsers
+        run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps chromium
+ 
+      - name: Run tests
+        run: dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
+        env:
+          BaseUrl: ${{ secrets.BASE_URL }}
+          Credentials__Username: ${{ secrets.TEST_USERNAME }}
+          Credentials__Password: ${{ secrets.TEST_PASSWORD }}
+ 
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: bin/**/screenshots/
+          if-no-files-found: ignore
+ 
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: "**/TestResults/*.trx"
+          if-no-files-found: ignore
+ 
