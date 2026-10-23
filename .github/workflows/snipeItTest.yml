@@ -28,14 +28,18 @@ jobs:
         run: dotnet build --no-restore
  
       - name: Install Playwright browsers
-        run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps chromium
+        shell: pwsh
+        run: |
+            $script = Get-ChildItem -Path . -Recurse -Filter playwright.ps1 | Select-Object -First 1
+            if (-not $script) { throw "playwright.ps1 not found. Did the build succeed?" }
+            Write-Host "Using $($script.FullName)"
+            & $script.FullName install --with-deps chromium
  
       - name: Run tests
         run: dotnet test --no-build --logger "trx;LogFileName=test-results.trx"
         env:
-          BaseUrl: ${{ secrets.BASE_URL }}
-          Credentials__Username: ${{ secrets.TEST_USERNAME }}
-          Credentials__Password: ${{ secrets.TEST_PASSWORD }}
+          Credentials__Username: ${{ secrets.USERNAME }}
+          Credentials__Password: ${{ secrets.PASSWORD }}
  
       - name: Upload failure screenshots
         if: failure()
